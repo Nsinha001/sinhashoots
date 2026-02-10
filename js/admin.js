@@ -119,6 +119,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return div.innerHTML;
     }
 
+    // Helper function to validate data URL
+    function isValidDataUrl(url) {
+        return typeof url === 'string' && url.match(/^data:image\/(png|jpeg|jpg|gif|webp);base64,/);
+    }
+
     // Display photos in the gallery
     function displayPhotos(filterCategory = 'all') {
         if (!uploadedPhotosContainer) return;
@@ -132,9 +137,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        uploadedPhotosContainer.innerHTML = filteredPhotos.map(photo => `
+        uploadedPhotosContainer.innerHTML = filteredPhotos.map(photo => {
+            // Validate data URL before using
+            const imageSrc = isValidDataUrl(photo.imageData) ? photo.imageData : '';
+            return `
             <div class="photo-card" data-id="${photo.id}">
-                <img src="${escapeHtml(photo.imageData)}" alt="${escapeHtml(photo.title)}" class="photo-card-image">
+                <img src="${imageSrc}" alt="${escapeHtml(photo.title)}" class="photo-card-image">
                 <div class="photo-card-info">
                     <div class="photo-card-title">${escapeHtml(photo.title)}</div>
                     <div class="photo-card-category">${escapeHtml(photo.category)}</div>
@@ -143,7 +151,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="delete-btn" data-photo-id="${photo.id}" title="Delete photo">×</button>
                 </div>
             </div>
-        `).join('');
+        `;
+        }).join('');
         
         // Add event listeners to delete buttons
         uploadedPhotosContainer.querySelectorAll('.delete-btn').forEach(btn => {

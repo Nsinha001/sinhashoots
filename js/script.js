@@ -184,16 +184,22 @@ document.addEventListener('DOMContentLoaded', () => {
     loadUploadedPhotos();
 });
 
+// Helper function to validate data URL
+function isValidDataUrl(url) {
+    return typeof url === 'string' && url.match(/^data:image\/(png|jpeg|jpg|gif|webp);base64,/);
+}
+
 function loadUploadedPhotos() {
     let photos = [];
     try {
         const data = JSON.parse(localStorage.getItem('portfolioPhotos') || '[]');
         // Validate that data is an array
         if (Array.isArray(data)) {
-            // Filter and validate each photo object
+            // Filter and validate each photo object including data URL validation
             photos = data.filter(p => 
                 p && typeof p === 'object' && 
-                p.id && p.title && p.category && p.imageData
+                p.id && p.title && p.category && p.imageData &&
+                isValidDataUrl(p.imageData)
             );
         }
     } catch (e) {
@@ -245,17 +251,21 @@ function loadUploadedPhotos() {
                                 const lightboxImage = document.getElementById('lightboxImage');
                                 
                                 if (imgElement && lightbox && lightboxImage) {
-                                    // For uploaded images, use the actual image
-                                    lightboxImage.style.backgroundImage = `url('${photo.imageData}')`;
-                                    lightboxImage.style.backgroundSize = 'contain';
-                                    lightboxImage.style.backgroundRepeat = 'no-repeat';
-                                    lightboxImage.style.backgroundPosition = 'center';
-                                    lightboxImage.style.width = '800px';
-                                    lightboxImage.style.height = '600px';
-                                    lightboxImage.style.borderRadius = '10px';
-                                    
-                                    lightbox.classList.add('active');
-                                    document.body.style.overflow = 'hidden';
+                                    // For uploaded images, validate and use the actual image
+                                    if (isValidDataUrl(photo.imageData)) {
+                                        // Safely escape single quotes in data URL for CSS
+                                        const safeDataUrl = photo.imageData.replace(/'/g, "\\'");
+                                        lightboxImage.style.backgroundImage = `url('${safeDataUrl}')`;
+                                        lightboxImage.style.backgroundSize = 'contain';
+                                        lightboxImage.style.backgroundRepeat = 'no-repeat';
+                                        lightboxImage.style.backgroundPosition = 'center';
+                                        lightboxImage.style.width = '800px';
+                                        lightboxImage.style.height = '600px';
+                                        lightboxImage.style.borderRadius = '10px';
+                                        
+                                        lightbox.classList.add('active');
+                                        document.body.style.overflow = 'hidden';
+                                    }
                                 }
                             });
                             
