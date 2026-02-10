@@ -17,42 +17,105 @@ if (hamburger && navMenu) {
     });
 }
 
-// Portfolio Filter Functionality
-const filterButtons = document.querySelectorAll('.filter-btn');
+// Lightbox Gallery Functionality with Protection
+const lightbox = document.getElementById('lightbox');
+const lightboxImage = document.getElementById('lightboxImage');
+const lightboxClose = document.querySelector('.lightbox-close');
 const galleryItems = document.querySelectorAll('.gallery-item');
 
-if (filterButtons.length > 0) {
-    filterButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            // Remove active class from all buttons
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            // Add active class to clicked button
-            button.classList.add('active');
-
-            const filter = button.getAttribute('data-filter');
-
-            galleryItems.forEach(item => {
-                if (filter === 'all') {
-                    item.classList.remove('hidden');
-                    setTimeout(() => {
-                        item.style.display = 'block';
-                    }, 10);
-                } else {
-                    const category = item.getAttribute('data-category');
-                    if (category === filter) {
-                        item.classList.remove('hidden');
-                        setTimeout(() => {
-                            item.style.display = 'block';
-                        }, 10);
-                    } else {
-                        item.style.display = 'none';
-                        item.classList.add('hidden');
-                    }
-                }
-            });
+if (galleryItems.length > 0) {
+    galleryItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const imgElement = item.querySelector('.placeholder-img');
+            if (imgElement && lightbox && lightboxImage) {
+                // Copy the background style to lightbox
+                const bgStyle = imgElement.style.background;
+                lightboxImage.style.background = bgStyle;
+                lightboxImage.style.width = '800px';
+                lightboxImage.style.height = '600px';
+                lightboxImage.style.borderRadius = '10px';
+                
+                // Show lightbox
+                lightbox.classList.add('active');
+                
+                // Prevent body scroll
+                document.body.style.overflow = 'hidden';
+            }
         });
     });
 }
+
+// Close lightbox
+if (lightboxClose) {
+    lightboxClose.addEventListener('click', closeLightbox);
+}
+
+if (lightbox) {
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) {
+            closeLightbox();
+        }
+    });
+    
+    // Disable right-click on lightbox
+    lightbox.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        return false;
+    });
+    
+    // Disable common screenshot shortcuts
+    lightbox.addEventListener('keydown', (e) => {
+        // Prevent Print Screen, Ctrl+P, Cmd+P, Ctrl+S, Cmd+S
+        if (
+            e.key === 'PrintScreen' ||
+            (e.ctrlKey && (e.key === 'p' || e.key === 's')) ||
+            (e.metaKey && (e.key === 'p' || e.key === 's'))
+        ) {
+            e.preventDefault();
+            return false;
+        }
+        // Close on Escape
+        if (e.key === 'Escape') {
+            closeLightbox();
+        }
+    });
+}
+
+function closeLightbox() {
+    if (lightbox) {
+        lightbox.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+}
+
+// Disable right-click on all gallery images
+document.querySelectorAll('.gallery-item, .placeholder-img').forEach(item => {
+    item.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        return false;
+    });
+    
+    // Disable dragging
+    item.addEventListener('dragstart', (e) => {
+        e.preventDefault();
+        return false;
+    });
+});
+
+// Disable keyboard shortcuts for saving
+document.addEventListener('keydown', (e) => {
+    // Disable Ctrl+S, Cmd+S on images
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        const activeElement = document.activeElement;
+        if (activeElement && (
+            activeElement.closest('.gallery-item') || 
+            activeElement.closest('.lightbox')
+        )) {
+            e.preventDefault();
+            return false;
+        }
+    }
+});
 
 // Contact Form Handling
 const contactForm = document.getElementById('contactForm');
@@ -78,7 +141,7 @@ if (contactForm) {
 
         // Hide message after 5 seconds
         setTimeout(() => {
-            formMessage.style.display = 'none';
+            formMessage.className = 'form-message';
         }, 5000);
     });
 }
@@ -105,17 +168,14 @@ const observerOptions = {
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
+            entry.target.classList.add('animate-in');
         }
     });
 }, observerOptions);
 
 // Observe all gallery items and service cards
 document.querySelectorAll('.gallery-item, .service-card, .stat-item').forEach(el => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(20px)';
-    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    el.classList.add('animate-on-scroll');
     observer.observe(el);
 });
 
