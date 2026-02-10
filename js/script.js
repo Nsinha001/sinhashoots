@@ -253,8 +253,10 @@ function loadUploadedPhotos() {
                                 if (imgElement && lightbox && lightboxImage) {
                                     // For uploaded images, validate and use the actual image
                                     if (isValidDataUrl(photo.imageData)) {
-                                        // Safely escape single quotes in data URL for CSS
-                                        const safeDataUrl = photo.imageData.replace(/'/g, "\\'");
+                                        // Safely escape special characters in data URL for CSS
+                                        const safeDataUrl = photo.imageData
+                                            .replace(/\\/g, '\\\\')
+                                            .replace(/'/g, "\\'");
                                         lightboxImage.style.backgroundImage = `url('${safeDataUrl}')`;
                                         lightboxImage.style.backgroundSize = 'contain';
                                         lightboxImage.style.backgroundRepeat = 'no-repeat';
