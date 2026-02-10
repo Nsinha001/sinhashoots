@@ -10,7 +10,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const categoryTabs = document.querySelectorAll('.tab-btn');
 
     // Initialize photos from localStorage
-    let photos = JSON.parse(localStorage.getItem('portfolioPhotos') || '[]');
+    let photos = [];
+    try {
+        const data = JSON.parse(localStorage.getItem('portfolioPhotos') || '[]');
+        // Validate that data is an array
+        if (Array.isArray(data)) {
+            // Filter and validate each photo object
+            photos = data.filter(p => 
+                p && typeof p === 'object' && 
+                p.id && p.title && p.category && p.imageData
+            );
+        }
+    } catch (e) {
+        console.error('Error loading photos from localStorage:', e);
+        photos = [];
+    }
 
     // Preview image when file is selected
     if (photoFile) {
@@ -98,6 +112,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Helper function to escape HTML
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
     // Display photos in the gallery
     function displayPhotos(filterCategory = 'all') {
         if (!uploadedPhotosContainer) return;
@@ -113,20 +134,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
         uploadedPhotosContainer.innerHTML = filteredPhotos.map(photo => `
             <div class="photo-card" data-id="${photo.id}">
-                <img src="${photo.imageData}" alt="${photo.title}" class="photo-card-image">
+                <img src="${escapeHtml(photo.imageData)}" alt="${escapeHtml(photo.title)}" class="photo-card-image">
                 <div class="photo-card-info">
-                    <div class="photo-card-title">${photo.title}</div>
-                    <div class="photo-card-category">${photo.category}</div>
+                    <div class="photo-card-title">${escapeHtml(photo.title)}</div>
+                    <div class="photo-card-category">${escapeHtml(photo.category)}</div>
                 </div>
                 <div class="photo-card-actions">
-                    <button class="delete-btn" onclick="deletePhoto(${photo.id})" title="Delete photo">×</button>
+                    <button class="delete-btn" data-photo-id="${photo.id}" title="Delete photo">×</button>
                 </div>
             </div>
         `).join('');
+        
+        // Add event listeners to delete buttons
+        uploadedPhotosContainer.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const photoId = parseInt(btn.getAttribute('data-photo-id'));
+                deletePhoto(photoId);
+            });
+        });
     }
 
     // Delete photo function
-    window.deletePhoto = (photoId) => {
+    function deletePhoto(photoId) {
         if (confirm('Are you sure you want to delete this photo?')) {
             photos = photos.filter(p => p.id !== photoId);
             localStorage.setItem('portfolioPhotos', JSON.stringify(photos));
@@ -142,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 uploadMessage.className = 'upload-message';
             }, 2000);
         }
-    };
+    }
 
     // Show message helper
     function showMessage(message, type) {

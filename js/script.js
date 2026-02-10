@@ -185,7 +185,21 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function loadUploadedPhotos() {
-    const photos = JSON.parse(localStorage.getItem('portfolioPhotos') || '[]');
+    let photos = [];
+    try {
+        const data = JSON.parse(localStorage.getItem('portfolioPhotos') || '[]');
+        // Validate that data is an array
+        if (Array.isArray(data)) {
+            // Filter and validate each photo object
+            photos = data.filter(p => 
+                p && typeof p === 'object' && 
+                p.id && p.title && p.category && p.imageData
+            );
+        }
+    } catch (e) {
+        console.error('Error loading photos from localStorage:', e);
+        photos = [];
+    }
     
     if (photos.length === 0) return;
 
@@ -263,9 +277,9 @@ function loadUploadedPhotos() {
 }
 
 // Add active state to current page in navigation
-const currentLocation = window.location.pathname.split('/').pop() || 'index.html';
+const currentPage = window.location.pathname.split('/').pop() || 'index.html';
 document.querySelectorAll('.nav-menu a').forEach(link => {
-    if (link.getAttribute('href') === currentLocation) {
+    if (link.getAttribute('href') === currentPage) {
         link.classList.add('active');
     }
 });
