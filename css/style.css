@@ -87,6 +87,11 @@ body {
     width: 100%;
 }
 
+.nav-menu a.admin-link {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
 .hamburger {
     display: none;
     flex-direction: column;

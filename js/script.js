@@ -179,6 +179,89 @@ document.querySelectorAll('.gallery-item, .service-card, .stat-item').forEach(el
     observer.observe(el);
 });
 
+// Load uploaded photos from localStorage and add to portfolio
+document.addEventListener('DOMContentLoaded', () => {
+    loadUploadedPhotos();
+});
+
+function loadUploadedPhotos() {
+    const photos = JSON.parse(localStorage.getItem('portfolioPhotos') || '[]');
+    
+    if (photos.length === 0) return;
+
+    // Map category names to gallery sections
+    const categoryMap = {
+        'portrait': 'Portrait Photography',
+        'wedding': 'Wedding & Events',
+        'landscape': 'Landscape & Nature',
+        'commercial': 'Commercial & Product'
+    };
+
+    // Find all gallery sections and add uploaded photos
+    Object.keys(categoryMap).forEach(category => {
+        const categoryPhotos = photos.filter(p => p.category === category);
+        
+        if (categoryPhotos.length > 0) {
+            // Find the section with this category title
+            const sections = document.querySelectorAll('.gallery-section');
+            sections.forEach(section => {
+                const title = section.querySelector('.gallery-section-title');
+                if (title && title.textContent.includes(categoryMap[category])) {
+                    const grid = section.querySelector('.gallery-grid');
+                    if (grid) {
+                        // Add uploaded photos to this gallery
+                        categoryPhotos.forEach(photo => {
+                            const photoItem = document.createElement('div');
+                            photoItem.className = 'gallery-item';
+                            photoItem.setAttribute('data-img', `uploaded-${photo.id}`);
+                            photoItem.innerHTML = `
+                                <div class="placeholder-img uploaded-img" style="background-image: url('${photo.imageData}'); background-size: cover; background-position: center;"></div>
+                                <div class="item-overlay">
+                                    <h3>${photo.title}</h3>
+                                    <p>${photo.description || 'Click to view'}</p>
+                                </div>
+                                <div class="watermark">© Sinha Shoots</div>
+                            `;
+                            grid.appendChild(photoItem);
+                            
+                            // Add click handler for lightbox
+                            photoItem.addEventListener('click', () => {
+                                const imgElement = photoItem.querySelector('.placeholder-img');
+                                const lightbox = document.getElementById('lightbox');
+                                const lightboxImage = document.getElementById('lightboxImage');
+                                
+                                if (imgElement && lightbox && lightboxImage) {
+                                    // For uploaded images, use the actual image
+                                    lightboxImage.style.backgroundImage = `url('${photo.imageData}')`;
+                                    lightboxImage.style.backgroundSize = 'contain';
+                                    lightboxImage.style.backgroundRepeat = 'no-repeat';
+                                    lightboxImage.style.backgroundPosition = 'center';
+                                    lightboxImage.style.width = '800px';
+                                    lightboxImage.style.height = '600px';
+                                    lightboxImage.style.borderRadius = '10px';
+                                    
+                                    lightbox.classList.add('active');
+                                    document.body.style.overflow = 'hidden';
+                                }
+                            });
+                            
+                            // Disable right-click and dragging
+                            photoItem.addEventListener('contextmenu', (e) => {
+                                e.preventDefault();
+                                return false;
+                            });
+                            photoItem.addEventListener('dragstart', (e) => {
+                                e.preventDefault();
+                                return false;
+                            });
+                        });
+                    }
+                }
+            });
+        }
+    });
+}
+
 // Add active state to current page in navigation
 const currentLocation = window.location.pathname.split('/').pop() || 'index.html';
 document.querySelectorAll('.nav-menu a').forEach(link => {
