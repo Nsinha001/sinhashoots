@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Upload Photos | Sinha Shoots</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <h1>Sinha Shoots - Admin</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="portfolio.html">Portfolio</a></li>
+                <li><a href="admin.html" class="active">Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Admin Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Photo Upload Manager</h1>
+            <p>Upload and manage your portfolio images</p>
+        </div>
+    </section>
+
+    <!-- Upload Section -->
+    <section class="admin-section">
+        <div class="container">
+            <div class="admin-grid">
+                <!-- Upload Form -->
+                <div class="upload-panel">
+                    <h2>Upload New Photo</h2>
+                    <form id="uploadForm" class="upload-form">
+                        <div class="form-group">
+                            <label for="photoTitle">Photo Title *</label>
+                            <input type="text" id="photoTitle" name="photoTitle" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="photoDescription">Description</label>
+                            <input type="text" id="photoDescription" name="photoDescription">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="photoCategory">Gallery Category *</label>
+                            <select id="photoCategory" name="photoCategory" required>
+                                <option value="">Select a category</option>
+                                <option value="portrait">Portrait Photography</option>
+                                <option value="wedding">Wedding & Events</option>
+                                <option value="landscape">Landscape & Nature</option>
+                                <option value="commercial">Commercial & Product</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="photoFile">Select Photo *</label>
+                            <input type="file" id="photoFile" name="photoFile" accept="image/*" required>
+                            <small>Supported formats: JPG, PNG, WebP. Max size: 5MB</small>
+                        </div>
+
+                        <div class="form-group preview-container" id="previewContainer" style="display: none;">
+                            <label>Preview:</label>
+                            <div class="image-preview">
+                                <img id="imagePreview" src="" alt="Preview">
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Upload Photo</button>
+                            <button type="button" class="btn btn-secondary" id="clearForm">Clear Form</button>
+                        </div>
+                    </form>
+                    <div id="uploadMessage" class="upload-message"></div>
+                </div>
+
+                <!-- Gallery Management -->
+                <div class="gallery-management">
+                    <h2>Uploaded Photos</h2>
+                    <div class="category-tabs">
+                        <button class="tab-btn active" data-category="all">All</button>
+                        <button class="tab-btn" data-category="portrait">Portrait</button>
+                        <button class="tab-btn" data-category="wedding">Wedding</button>
+                        <button class="tab-btn" data-category="landscape">Landscape</button>
+                        <button class="tab-btn" data-category="commercial">Commercial</button>
+                    </div>
+                    <div id="uploadedPhotos" class="uploaded-photos-grid">
+                        <p class="empty-message">No photos uploaded yet. Start by uploading your first photo!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instructions -->
+            <div class="instructions-panel">
+                <h3>📸 How to Use the Photo Upload Manager</h3>
+                <div class="instructions-grid">
+                    <div class="instruction-item">
+                        <span class="instruction-number">1</span>
+                        <div>
+                            <h4>Fill in Photo Details</h4>
+                            <p>Enter a title and description for your photo, then select the appropriate gallery category.</p>
+                        </div>
+                    </div>
+                    <div class="instruction-item">
+                        <span class="instruction-number">2</span>
+                        <div>
+                            <h4>Upload Your Photo</h4>
+                            <p>Click "Select Photo" to choose an image from your device. You'll see a preview before uploading.</p>
+                        </div>
+                    </div>
+                    <div class="instruction-item">
+                        <span class="instruction-number">3</span>
+                        <div>
+                            <h4>Submit & View</h4>
+                            <p>Click "Upload Photo" to add it to your portfolio. Your photos will appear in the gallery manager and on the portfolio page.</p>
+                        </div>
+                    </div>
+                    <div class="instruction-item">
+                        <span class="instruction-number">4</span>
+                        <div>
+                            <h4>Manage Your Gallery</h4>
+                            <p>View all uploaded photos below. You can delete photos by clicking the delete button on each image.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Sinha Shoots</h3>
+                    <p>Professional photography services capturing life's beautiful moments.</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Sinha Shoots. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
